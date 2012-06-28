@@ -207,8 +207,8 @@ class Command(BaseCommand):
                     cnt += setnotnone(addr,'suburb',get('suburb'))
                     cnt += setnotnone(addr,'area',get('area'))
                     cnt += setnotnone(addr,'province',get('province'))
-                    cnt += setnotnone(addr,'olat',floatnone(get('lat')))
-                    cnt += setnotnone(addr,'olong',floatnone(get('lon')))
+                    cnt += setnotnone(addr,'lat',floatnone(get('lat')))
+                    cnt += setnotnone(addr,'long',floatnone(get('lon')))
                     
                     if cnt == 0:
                         saddr += 1
