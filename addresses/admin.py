@@ -14,7 +14,7 @@ class AddressAdmin(admin.ModelAdmin):
     
     def oloc(self, obj):
         try:
-            return '%.5f, %.5f' % (obj.olat, obj.olong)
+            return '%.5f, %.5f' % (obj.lat, obj.lon)
         except:
             return ''
     oloc.short_description='Recorded location'

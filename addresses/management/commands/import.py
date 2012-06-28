@@ -52,11 +52,14 @@ dataorder = [
     # Addresses
     #'yr14 bt20 addresses and migration codes 24 march 2009.csv',
     #'yr18 migration updated feb 09 2012.csv',
+    
     # GPS Data
     #'Year 13 Mobile Adol Section 1 GPS Coordinates.csv',
+    #'Yr15 GPS Dates updated (5th Jun 09)1 Active.csv',
+    #'Yr 16 GPS Updated Dates (active) 9 Jun 091.csv',
     
     # Validated Data
-    '3273 homes of non-movers Nov 4 2011.csv',
+    #'3273 homes of non-movers Nov 4 2011.csv',
 ]
 
 datamap = {
@@ -214,10 +217,9 @@ class Command(BaseCommand):
                         saddr += 1
 
                     addr.save()
-                    addr.getgeo()
                     
-                    #if ((naddr+uaddr) % 1000) == 0:
-                    transaction.commit()
+                    if ((naddr+uaddr) % 1000) == 0:
+                        transaction.commit()
                  
                 transaction.commit()
                 print '%d New, %d Updated, %d Empty' % (naddr, uaddr, saddr)

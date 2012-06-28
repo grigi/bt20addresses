@@ -27,7 +27,8 @@ class Address(models.Model):
     road = models.CharField(max_length=255, null=True, blank=True)
     suburb = models.CharField(max_length=255, null=True, blank=True)
     area = models.CharField(max_length=255, null=True, blank=True)
-    province = models.CharField(max_length=255, null=True, blank=True)    
+    province = models.CharField(max_length=255, null=True, blank=True)
+    changed = models.NullBooleanField(null=True, blank=True)
     
     # Provided GPS coords
     lat = models.FloatField(null=True, blank=True) 
@@ -97,10 +98,24 @@ class Address(models.Model):
             address = '%s %s, %s, %s, %s, South Africa' % (bos(self.number), bos(self.road), suburb, bos(self.area), bos(self.province))
             self.address = re.sub(r',\s*,', r',', address)
             if len(self.address) < 20:
-                self.address = None        
+                self.address = None
+            
+            # At this point all the google collected data is invalid (if it even has been done yet)
+            self.gstreet = None
+            self.groute = None
+            self.gsublocality = None
+            self.glocality = None
+            self.gcity = None
+            self.gmetro = None
+            self.gprovince = None
+            self.gcountry = None
+            self.gpostcode = None
+            self.gtype = None
+            self.gaccuracy = None
+            
     
     def getgeo(self):
-        if self.address is not None:
+        if self.address is not None and self.gtype is None:
             results = Geocoder.geocode(self.address)
             if len(results) > 0:
                 print self.address
