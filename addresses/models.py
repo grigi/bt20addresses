@@ -156,7 +156,7 @@ class Address(models.Model):
                 self.gmetro = results[0].administrative_area_level_2
                 self.gprovince = results[0].administrative_area_level_1
                 self.gcountry = results[0].country
-                self.gpostcode = int(results[0].postal_code)
+                self.gpostcode = results[0].postal_code
                 self.gtype = results[0].raw[0]['geometry']['location_type']
                 try:
                     bounds = results[0].raw[0]['geometry']['bounds']
