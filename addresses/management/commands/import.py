@@ -208,15 +208,16 @@ class Command(BaseCommand):
                     cnt += setnotnone(addr,'area',get('area'))
                     cnt += setnotnone(addr,'province',get('province'))
                     cnt += setnotnone(addr,'lat',floatnone(get('lat')))
-                    cnt += setnotnone(addr,'long',floatnone(get('lon')))
+                    cnt += setnotnone(addr,'lon',floatnone(get('lon')))
                     
                     if cnt == 0:
                         saddr += 1
 
                     addr.save()
+                    addr.getgeo()
                     
-                    if ((naddr+uaddr) % 1000) == 0:
-                        transaction.commit()
+                    #if ((naddr+uaddr) % 1000) == 0:
+                    transaction.commit()
                  
                 transaction.commit()
                 print '%d New, %d Updated, %d Empty' % (naddr, uaddr, saddr)
