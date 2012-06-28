@@ -8,11 +8,11 @@ class GoogleMapsAddressWidget(widgets.TextInput):
     "a widget that will place a google map right after the #id_address field"
     
     class Media:
-        css = {'all': (settings.STATIC_URL + 'django_google_maps/css/google-maps-admin.css',),}
+        css = {'all': (settings.STATIC_URL + 'addresses/css/google-maps-admin.css',),}
         js = (
-            'https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js',
+            settings.STATIC_URL + 'js/libs/jquery-1.7.1.min.js',
             'http://maps.google.com/maps/api/js?sensor=false',
-            settings.STATIC_URL + 'django_google_maps/js/google-maps-admin.js',
+            settings.STATIC_URL + 'addresses/js/google-maps-admin.js',
         )
 
     def render(self, name, value, attrs=None):

@@ -1,5 +1,5 @@
 # Admin for app 'addresses'
-from django.contrib import admi
+from django.contrib import admin
 from models import *
 import widgets as map_widgets
 import fields as map_fields
@@ -13,6 +13,7 @@ class AddressAdmin(admin.ModelAdmin):
 admin.site.register(Address, AddressAdmin)
 
 class AddressInline(admin.TabularInline):
+    readonly_fields = ['address', 'geolocation', 'distance']
     model = Address
     extra = 0
 class SubjectAdmin(admin.ModelAdmin):
