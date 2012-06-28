@@ -1,0 +1,32 @@
+{% extends "base_template.html" %}
+
+{# This is the title #}
+{% block title %}{{ name }} for app 'addresses'{% endblock %}
+
+{# Here you put any extra stylesheets you need #}
+{% block styles %}
+<script src="{{ STATIC_URL }}addresses/css/style.css"></script>
+{% endblock %}
+
+{# Here you put any extra js scripts you need #}
+{% block scripts %}
+<script src="{{ STATIC_URL }}addresses/js/script.js"></script>
+{% endblock %}
+
+{# This is for extra miscelaneous items that go into the head #}
+{% block posthead %}{% endblock %}
+
+{# Here goes header content #}
+{% block header %}{% endblock %}
+
+
+{# Here goes footer content #}
+{% block footer %}{% endblock %}
+
+{# Here goes the content for the page #}
+{% block content %}
+<h1>{{ name }} for app 'addresses'</h1>
+<hr/>
+This is a sample page :-)
+{% endblock %}
+
