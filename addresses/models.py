@@ -28,7 +28,8 @@ class Address(models.Model):
     suburb = models.CharField(max_length=255, null=True, blank=True)
     area = models.CharField(max_length=255, null=True, blank=True)
     province = models.CharField(max_length=255, null=True, blank=True)
-    changed = models.NullBooleanField(null=True, blank=True)
+    postcode = models.IntegerField(null=True, blank=True)
+    migrated = models.NullBooleanField(null=True, blank=True)
     
     # Provided GPS coords
     lat = models.FloatField(null=True, blank=True) 
@@ -47,7 +48,7 @@ class Address(models.Model):
     gmetro = models.CharField(max_length=255, null=True, blank=True)
     gprovince = models.CharField(max_length=255, null=True, blank=True)
     gcountry = models.CharField(max_length=255, null=True, blank=True)
-    gpostcode = models.CharField(max_length=255, null=True, blank=True)
+    gpostcode = models.IntegerField(null=True, blank=True)
     gtype = models.CharField(max_length=255, null=True, blank=True)
     gaccuracy = models.FloatField('Variance KM', null=True, blank=True)
     
@@ -63,14 +64,17 @@ class Address(models.Model):
             nlon = self.geolocation.lon
             if nlat is not None and nlon is not None:
                 self.distance = math.sqrt(math.pow((self.lat - nlat),2) + math.pow((self.lon - nlon),2)) * 108.0
-                print '%.5f, %.5f to %.5f, %.5f = %.3f km' % (self.lat, self.lon, nlat, nlon, self.distance) 
+                #print '%.5f, %.5f to %.5f, %.5f = %.3f km' % (self.lat, self.lon, nlat, nlon, self.distance) 
         
         super(Address, self).save(*args, **kwargs)
 
     def wash(self):
         if self.address == '':
             self.address = None
-            
+        
+        if str(self.number).lower().find('missing') != -1:
+            self.number = None
+        
         if self.road == '98' or self.road == '99':
             self.road = None
 
@@ -101,6 +105,7 @@ class Address(models.Model):
                 self.address = None
             
             # At this point all the google collected data is invalid (if it even has been done yet)
+            self.geolocation = None
             self.gstreet = None
             self.groute = None
             self.gsublocality = None
@@ -112,13 +117,36 @@ class Address(models.Model):
             self.gpostcode = None
             self.gtype = None
             self.gaccuracy = None
+            self.distance = None
             
     
     def getgeo(self):
         if self.address is not None and self.gtype is None:
+            try:
+                # See if this query has already been done
+                other = Address.objects.filter(address=self.address, gtype__isnull=False)[0]
+                # Copy stuff
+                self.geolocation = other.geolocation
+                self.gstreet = other.gstreet
+                self.groute = other.groute
+                self.gsublocality = other.gsublocality
+                self.glocality = other.glocality
+                self.gcity = other.gcity
+                self.gmetro = other.gmetro
+                self.gprovince = other.gprovince
+                self.gcountry = other.gcountry
+                self.gpostcode = other.gpostcode
+                self.gtype = other.gtype
+                self.gaccuracy = other.gaccuracy
+                self.save()                
+                return
+            except:
+                # Nope, go get it
+                pass
+            
             results = Geocoder.geocode(self.address)
             if len(results) > 0:
-                print self.address
+                #print self.address
                 (self.geolocation.lat, self.geolocation.lon) = results[0].coordinates
                 self.gstreet = results[0].street_number
                 self.groute = results[0].route
@@ -128,7 +156,7 @@ class Address(models.Model):
                 self.gmetro = results[0].administrative_area_level_2
                 self.gprovince = results[0].administrative_area_level_1
                 self.gcountry = results[0].country
-                self.gpostcode = results[0].postal_code
+                self.gpostcode = int(results[0].postal_code)
                 self.gtype = results[0].raw[0]['geometry']['location_type']
                 try:
                     bounds = results[0].raw[0]['geometry']['bounds']

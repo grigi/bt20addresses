@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from addresses.models import *
+import sys
 
 class Command(BaseCommand):
     args = ''
@@ -9,4 +10,9 @@ class Command(BaseCommand):
         
         for addr in Address.objects.filter(address__isnull=False, gtype__isnull=True):
             addr.getgeo()
+            sys.stdout.write('.')
+            sys.stdout.flush()
+        
+        print ""
+
             
