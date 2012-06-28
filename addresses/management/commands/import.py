@@ -72,7 +72,7 @@ dataorder = [
     #'Yr 16 GPS Updated Dates (active) 9 Jun 091.csv',
     
     # Validated Data
-    #'3273 homes of non-movers Nov 4 2011.csv',
+    '3273 homes of non-movers Nov 4 2011.csv',
 ]
 
 datamap = {
@@ -317,33 +317,7 @@ datamap = {
     '3273 homes of non-movers Nov 4 2011.csv': [
         {
             'bttid': (var, 'bttid'),
-            'year': (None, 1996),
-            'number': (var, 'homenumber'),
-            'road': (var, 'homeroad'),
-            'suburb': (var, 'homesuburb'),
-            'area': (var, 'homearea'),
-            'province': (province, 'homeprov'),
-            'postcode': None,
-            'migrated': None,
-            'lat': (var, 'home_lat'),
-            'lon': (var, 'home_long'),
-        },
-        {
-            'bttid': (var, 'bttid'),
             'year': (None, 1997),
-            'number': (var, 'homenumber'),
-            'road': (var, 'homeroad'),
-            'suburb': (var, 'homesuburb'),
-            'area': (var, 'homearea'),
-            'province': (province, 'homeprov'),
-            'postcode': None,
-            'migrated': None,
-            'lat': (var, 'home_lat'),
-            'lon': (var, 'home_long'),
-        },
-        {
-            'bttid': (var, 'bttid'),
-            'year': (None, 1998),
             'number': (var, 'homenumber'),
             'road': (var, 'homeroad'),
             'suburb': (var, 'homesuburb'),
@@ -369,33 +343,7 @@ datamap = {
         },
         {
             'bttid': (var, 'bttid'),
-            'year': (None, 2000),
-            'number': (var, 'homenumber'),
-            'road': (var, 'homeroad'),
-            'suburb': (var, 'homesuburb'),
-            'area': (var, 'homearea'),
-            'province': (province, 'homeprov'),
-            'postcode': None,
-            'migrated': None,
-            'lat': (var, 'home_lat'),
-            'lon': (var, 'home_long'),
-        },
-        {
-            'bttid': (var, 'bttid'),
             'year': (None, 2001),
-            'number': (var, 'homenumber'),
-            'road': (var, 'homeroad'),
-            'suburb': (var, 'homesuburb'),
-            'area': (var, 'homearea'),
-            'province': (province, 'homeprov'),
-            'postcode': None,
-            'migrated': None,
-            'lat': (var, 'home_lat'),
-            'lon': (var, 'home_long'),
-        },
-        {
-            'bttid': (var, 'bttid'),
-            'year': (None, 2002),
             'number': (var, 'homenumber'),
             'road': (var, 'homeroad'),
             'suburb': (var, 'homesuburb'),
