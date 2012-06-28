@@ -6,6 +6,11 @@ import math
 
 # Create your models here.
 
+def bos(s):
+    if s is None:
+        return ''
+    return s
+
 class Subject(models.Model):
     bttid = models.IntegerField(primary_key=True)
 
@@ -29,23 +34,31 @@ class Address(models.Model):
     
     # Generated addr data
     address = map_fields.AddressField(max_length=200, null=True, blank=True)
-    geolocation = map_fields.GeoLocationField(max_length=100, null=True, blank=True)
+    geolocation = map_fields.GeoLocationField('Estimated Location',max_length=100, null=True, blank=True)
     
     # Verify distance in KM
-    distance = models.FloatField(null=True, blank=True)
+    distance = models.FloatField('Distance KM', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.address is None or self.address == '':
             # suburb extention stuff tends to confuse google
-            suburb = re.sub(r' [Ee][Xx][Tt] .*', r'', self.suburb)
-            address = '%s %s, %s, %s, %s, South Africa' % (self.number, self.road, suburb, self.area, self.province)
+            if self.suburb is None:
+                suburb=''
+            else:
+                suburb = re.sub(r' [Ee][Xx][Tt] .*', r'', self.suburb)
+                suburb = re.sub(r' [Zz][Oo][Nn][Ee] .*', r'', suburb)
+                suburb = re.sub(r' [Bb][Ll][Oo][Cc][Kk] .*', r'', suburb)
+            address = '%s %s, %s, %s, %s, South Africa' % (bos(self.number), bos(self.road), suburb, bos(self.area), bos(self.province))
             self.address = re.sub(r',\s*,', r',', address)
-        if self.olat is not None and self.olong is not None and (self.geolocation is not None or self.geolocation != ''):
+            if len(self.address) < 20:
+                self.address = None
+        if self.olat is not None and self.olong is not None:
             # Compute approx distance, where 1 arc-hour is 108km
             nlat = self.geolocation.lat
             nlong = self.geolocation.lon
-            self.distance = math.sqrt(math.pow((self.olat - nlat),2) + math.pow((self.olong - nlong),2)) * 108.0
-            print '%.5f, %.5f to %.5f, %.5f = %.3f km' % (self.olat, self.olong, nlat, nlong, self.distance) 
+            if nlat is not None and nlong is not None:
+                self.distance = math.sqrt(math.pow((self.olat - nlat),2) + math.pow((self.olong - nlong),2)) * 108.0
+                print '%.5f, %.5f to %.5f, %.5f = %.3f km' % (self.olat, self.olong, nlat, nlong, self.distance) 
         super(Address, self).save(*args, **kwargs)
 
     def __unicode__(self):

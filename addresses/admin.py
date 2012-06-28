@@ -7,9 +7,18 @@ import fields as map_fields
 # Create your admin config here.
 
 class AddressAdmin(admin.ModelAdmin):
+    list_display = ['subject', 'year', 'address', 'oloc', 'geolocation', 'distance']
     formfield_overrides = {
        map_fields.AddressField: {'widget': map_widgets.GoogleMapsAddressWidget},    
     }
+    
+    def oloc(self, obj):
+        try:
+            return '%.5f, %.5f' % (obj.olat, obj.olong)
+        except:
+            return ''
+    oloc.short_description='Recorded location'
+    
 admin.site.register(Address, AddressAdmin)
 
 class AddressInline(admin.TabularInline):
