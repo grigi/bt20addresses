@@ -28,7 +28,11 @@ def setnotnone(o,a,v):
             try:
                 v = int(v)
             except:
-                v = None
+                try:
+                    v = int(v[1:])
+                except:
+                    print v
+                    v = None
         
         setattr(o,a,v)
         return 1
