@@ -19,6 +19,12 @@ def floatnone(v):
         return None
     return float(v)
 
+def setnotnone(o,a,v):
+    if v is not None and str(v) != '':
+        setattr(o,a,v)
+        return 1
+    return 0
+
 def var(s):
     i = 0
     index = None
@@ -43,21 +49,107 @@ def province(s):
 datafolder = '%s/data/' % (settings.PROJECT_ROOT)
 
 dataorder = [
+    # Addresses
+    #'yr14 bt20 addresses and migration codes 24 march 2009.csv',
+    #'yr18 migration updated feb 09 2012.csv',
+    # GPS Data
+    #'Year 13 Mobile Adol Section 1 GPS Coordinates.csv',
+    
+    # Validated Data
     '3273 homes of non-movers Nov 4 2011.csv',
 ]
 
 datamap = {
-    '3273 homes of non-movers Nov 4 2011.csv': {
-        'bttid': (var, 'bttid'),
-        'year': (None, 1990),
-        'number': (var, 'homenumber'),
-        'road': (var, 'homeroad'),
-        'suburb': (var, 'homesuburb'),
-        'area': (var, 'homearea'),
-        'province': (province, 'homeprov'),
-        'lat': (var, 'home_lat'),
-        'lon': (var, 'home_long'),
-    }
+    '3273 homes of non-movers Nov 4 2011.csv': [
+        {
+            'bttid': (var, 'bttid'),
+            'year': (None, 1996),
+            'number': (var, 'homenumber'),
+            'road': (var, 'homeroad'),
+            'suburb': (var, 'homesuburb'),
+            'area': (var, 'homearea'),
+            'province': (province, 'homeprov'),
+            'lat': (var, 'home_lat'),
+            'lon': (var, 'home_long'),
+        },
+        {
+            'bttid': (var, 'bttid'),
+            'year': (None, 1997),
+            'number': (var, 'homenumber'),
+            'road': (var, 'homeroad'),
+            'suburb': (var, 'homesuburb'),
+            'area': (var, 'homearea'),
+            'province': (province, 'homeprov'),
+            'lat': (var, 'home_lat'),
+            'lon': (var, 'home_long'),
+        },
+        {
+            'bttid': (var, 'bttid'),
+            'year': (None, 1998),
+            'number': (var, 'homenumber'),
+            'road': (var, 'homeroad'),
+            'suburb': (var, 'homesuburb'),
+            'area': (var, 'homearea'),
+            'province': (province, 'homeprov'),
+            'lat': (var, 'home_lat'),
+            'lon': (var, 'home_long'),
+        },
+        {
+            'bttid': (var, 'bttid'),
+            'year': (None, 1999),
+            'number': (var, 'homenumber'),
+            'road': (var, 'homeroad'),
+            'suburb': (var, 'homesuburb'),
+            'area': (var, 'homearea'),
+            'province': (province, 'homeprov'),
+            'lat': (var, 'home_lat'),
+            'lon': (var, 'home_long'),
+        },
+        {
+            'bttid': (var, 'bttid'),
+            'year': (None, 2000),
+            'number': (var, 'homenumber'),
+            'road': (var, 'homeroad'),
+            'suburb': (var, 'homesuburb'),
+            'area': (var, 'homearea'),
+            'province': (province, 'homeprov'),
+            'lat': (var, 'home_lat'),
+            'lon': (var, 'home_long'),
+        },
+        {
+            'bttid': (var, 'bttid'),
+            'year': (None, 2001),
+            'number': (var, 'homenumber'),
+            'road': (var, 'homeroad'),
+            'suburb': (var, 'homesuburb'),
+            'area': (var, 'homearea'),
+            'province': (province, 'homeprov'),
+            'lat': (var, 'home_lat'),
+            'lon': (var, 'home_long'),
+        },
+        {
+            'bttid': (var, 'bttid'),
+            'year': (None, 2002),
+            'number': (var, 'homenumber'),
+            'road': (var, 'homeroad'),
+            'suburb': (var, 'homesuburb'),
+            'area': (var, 'homearea'),
+            'province': (province, 'homeprov'),
+            'lat': (var, 'home_lat'),
+            'lon': (var, 'home_long'),
+        },
+        {
+            'bttid': (var, 'bttid'),
+            'year': (None, 2003),
+            'number': (var, 'homenumber'),
+            'road': (var, 'homeroad'),
+            'suburb': (var, 'homesuburb'),
+            'area': (var, 'homearea'),
+            'province': (province, 'homeprov'),
+            'lat': (var, 'home_lat'),
+            'lon': (var, 'home_long'),
+        },
+    ]
 }
 
 def get(attr):
@@ -80,42 +172,52 @@ class Command(BaseCommand):
         transaction.managed(flag=True)
         
         for filename in dataorder:
-            print "Importing '%s'" % (filename)
+            for map in datamap[filename]:
+                print "Importing '%s' - %s" % (filename, map['year'][1])
             
-            map = datamap[filename]
-            
-            rdr = csv.reader(open(datafolder + filename, 'rb'))
-            
-            cols = rdr.next()
-            #print ', '.join(cols)
-            
-            naddr = 0
-            uaddr = 0
-            
-            for datarow in rdr:
-                try:
-                    subject = Subject.models.get(bttid=intnone(get('bttid')))
-                    uaddr += 1
-                except:
-                    subject = Subject(bttid=intnone(get('bttid')))
-                    subject.save()
-                    naddr += 1
+                rdr = csv.reader(open(datafolder + filename, 'rb'))
                 
-                addr = Address(
-                    subject=subject,
-                    year=get('year'),
-                    number=get('number'),
-                    road=get('road'),
-                    suburb=get('suburb'),
-                    area=get('area'),
-                    province=get('province'),
-                    olat=floatnone(get('lat')),
-                    olong=floatnone(get('lon')),
-                )
-                addr.save()
+                cols = rdr.next()
+                #print ', '.join(cols)
                 
-                if ((naddr+uaddr) % 1000) == 0:
-                    transaction.commit()
-             
-            transaction.commit()
-            print '%d New, %d Updated' % (naddr, uaddr)
+                naddr = 0
+                uaddr = 0
+                saddr = 0
+                
+                for datarow in rdr:
+                    try:
+                        subject = Subject.models.get(bttid=intnone(get('bttid')))
+                    except:
+                        subject = Subject(bttid=intnone(get('bttid')))
+                        subject.save()
+    
+                    try:
+                        addr = Address.models.get(subject=subject, year=intnone(get('year')))
+                        uaddr += 1
+                    except:
+                        addr = Address(
+                            subject=subject,
+                            year=intnone(get('year')),
+                        )
+                        naddr += 1
+                    
+                    cnt = 0                 
+                    cnt += setnotnone(addr,'number',get('number'))
+                    cnt += setnotnone(addr,'road',get('road'))
+                    cnt += setnotnone(addr,'suburb',get('suburb'))
+                    cnt += setnotnone(addr,'area',get('area'))
+                    cnt += setnotnone(addr,'province',get('province'))
+                    cnt += setnotnone(addr,'olat',floatnone(get('lat')))
+                    cnt += setnotnone(addr,'olong',floatnone(get('lon')))
+                    
+                    if cnt == 0:
+                        saddr += 1
+
+                    addr.save()
+                    
+                    if ((naddr+uaddr) % 1000) == 0:
+                        transaction.commit()
+                 
+                transaction.commit()
+                print '%d New, %d Updated, %d Empty' % (naddr, uaddr, saddr)
+            

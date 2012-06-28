@@ -40,6 +40,7 @@ class Address(models.Model):
     distance = models.FloatField('Distance KM', null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        self.wash()
         if self.address is None or self.address == '':
             # suburb extention stuff tends to confuse google
             if self.suburb is None:
@@ -61,6 +62,10 @@ class Address(models.Model):
                 print '%.5f, %.5f to %.5f, %.5f = %.3f km' % (self.olat, self.olong, nlat, nlong, self.distance) 
         super(Address, self).save(*args, **kwargs)
 
+    def wash(self):
+        pass
+
+    
     def __unicode__(self):
         return '%s - %s' % (self.subject, self.year)
         
