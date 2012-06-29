@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from django.db import transaction
 import csv
+import re
+from datetime import datetime
 
 from addresses.models import *
 
@@ -63,6 +65,47 @@ def migrate(s):
         return False
     return None
 
+def getyear13(s):
+    s = var(s)
+    try:
+        dt = datetime.strptime(s, "%m/%d/%y %H:%M:%S")
+        #print dt.timetuple()[0]
+        return dt.timetuple()[0]
+    except:
+        return 2003
+
+def getyear16(s):
+    s = var(s)
+    try:
+        dt = datetime.strptime(s, "%Y/%m/%d")
+        #print dt.timetuple()[0]
+        return dt.timetuple()[0]
+    except:
+        return 2006
+
+def gps(s):
+    s = var(s)
+    #print s
+    result = re.match(r'([NnSs])\D*(\d+)\D*(\d+)\D*(\d+)\D*\d*\D*([EeWw])\D*(\d+)\D*(\d+)\D*(\d+)\D*\d*\D*',s)
+    r = result.group(1,2,3,4,5,6,7,8)
+    #print r
+    lon = float(r[1]) + float('%s.%s' % (r[2],r[3]))/60.0
+    if str(r[0]).lower() == 's':
+        lon *= -1.0
+    lat = float(r[5]) + float('%s.%s' % (r[6],r[7]))/60.0
+    if str(r[4]).lower() == 'w':
+        lat *= -1.0
+    #print lon, lat
+    return (lon,lat)
+
+def getlon(s):
+    (lon,lat) = gps(s)
+    return lon
+
+def getlat(s):
+    (lon,lat) = gps(s)
+    return lat
+
 datafolder = '%s/data/' % (settings.PROJECT_ROOT)
 
 dataorder = [
@@ -71,15 +114,60 @@ dataorder = [
     'yr18 migration updated feb 09 2012.csv',
     
     # GPS Data
-    #'Year 13 Mobile Adol Section 1 GPS Coordinates.csv',
-    #'Yr15 GPS Dates updated (5th Jun 09)1 Active.csv',
-    #'Yr 16 GPS Updated Dates (active) 9 Jun 091.csv',
+    'Year 13 Mobile Adol Section 1 GPS Coordinates.csv',
+    'Yr15 GPS Dates updated (5th Jun 09)1 Active.csv',
+    'Yr 16 GPS Updated Dates (active) 9 Jun 091.csv',
     
     # Validated Data
     '3273 homes of non-movers Nov 4 2011.csv',
 ]
 
 datamap = {
+    'Yr 16 GPS Updated Dates (active) 9 Jun 091.csv': [
+        {
+            'bttid': (var, 'Bt20_ID'),
+            'year': (getyear16, 'Date_Seen1'),
+            'number': None,
+            'road': None,
+            'suburb': None,
+            'area': None,
+            'province': None,
+            'postcode': None,
+            'migrated': None,
+            'lat': (getlat, 'Way_Point'),
+            'lon': (getlon, 'Way_Point'),
+        },
+    ],
+    'Yr15 GPS Dates updated (5th Jun 09)1 Active.csv': [
+        {
+            'bttid': (var, 'Yr_15_GPS_ID_fix1_BttID'),
+            'year': (None, 2005),
+            'number': None,
+            'road': None,
+            'suburb': None,
+            'area': None,
+            'province': None,
+            'postcode': None,
+            'migrated': None,
+            'lat': (getlat, 'GPS'),
+            'lon': (getlon, 'GPS'),
+        },
+    ],
+    'Year 13 Mobile Adol Section 1 GPS Coordinates.csv': [
+        {
+            'bttid': (var, 'Y13M_Bt20ID'),
+            'year': (getyear13, 'Y13M_Date'),
+            'number': None,
+            'road': None,
+            'suburb': None,
+            'area': None,
+            'province': None,
+            'postcode': None,
+            'migrated': None,
+            'lat': (getlat, 'Y13M_GPS'),
+            'lon': (getlon, 'Y13M_GPS'),
+        }
+    ],
     'yr18 migration updated feb 09 2012.csv': [
         {
             'bttid': (var, 'BT20ID'),
