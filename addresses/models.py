@@ -3,7 +3,7 @@ from django.db import models
 import fields as map_fields
 import re
 import math
-from pygeocoder import Geocoder
+from pygeocoder import Geocoder, GeocoderError
 
 # Create your models here.
 
@@ -144,8 +144,13 @@ class Address(models.Model):
                 # Nope, go get it
                 pass
             
-            results = Geocoder.geocode(self.address)
-            if len(results) > 0:
+            try:
+                results = Geocoder.geocode(self.address)
+            except GeocoderError, s:
+                results = None
+                self.gtype=str(s)
+                
+            if results is not None and len(results) > 0:
                 #print self.address
                 (self.geolocation.lat, self.geolocation.lon) = results[0].coordinates
                 self.gstreet = results[0].street_number
