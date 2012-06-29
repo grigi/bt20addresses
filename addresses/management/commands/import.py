@@ -89,37 +89,37 @@ def gps(s):
     result = re.match(r'([NnSs])\D*(\d+)\D*(\d+)\D*(\d+)\D*\d*\D*([EeWw])\D*(\d+)\D*(\d+)\D*(\d+)\D*\d*\D*',s)
     r = result.group(1,2,3,4,5,6,7,8)
     #print r
-    lon = float(r[1]) + float('%s.%s' % (r[2],r[3]))/60.0
+    lat = float(r[1]) + float('%s.%s' % (r[2],r[3]))/60.0
     if str(r[0]).lower() == 's':
-        lon *= -1.0
-    lat = float(r[5]) + float('%s.%s' % (r[6],r[7]))/60.0
-    if str(r[4]).lower() == 'w':
         lat *= -1.0
+    lon = float(r[5]) + float('%s.%s' % (r[6],r[7]))/60.0
+    if str(r[4]).lower() == 'w':
+        lon *= -1.0
     #print lon, lat
-    return (lon,lat)
+    return (lat,lon)
 
 def getlon(s):
-    (lon,lat) = gps(s)
+    (lat,lon) = gps(s)
     return lon
 
 def getlat(s):
-    (lon,lat) = gps(s)
+    (lat,lon) = gps(s)
     return lat
 
 datafolder = '%s/data/' % (settings.PROJECT_ROOT)
 
 dataorder = [
     # Addresses
-    'yr14 bt20 addresses and migration codes 24 march 2009.csv',
-    'yr18 migration updated feb 09 2012.csv',
+    #'yr14 bt20 addresses and migration codes 24 march 2009.csv',
+    #'yr18 migration updated feb 09 2012.csv',
     
     # GPS Data
     'Year 13 Mobile Adol Section 1 GPS Coordinates.csv',
-    'Yr15 GPS Dates updated (5th Jun 09)1 Active.csv',
-    'Yr 16 GPS Updated Dates (active) 9 Jun 091.csv',
+    #'Yr15 GPS Dates updated (5th Jun 09)1 Active.csv',
+    #'Yr 16 GPS Updated Dates (active) 9 Jun 091.csv',
     
     # Validated Data
-    '3273 homes of non-movers Nov 4 2011.csv',
+    #'3273 homes of non-movers Nov 4 2011.csv',
 ]
 
 datamap = {
