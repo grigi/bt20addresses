@@ -7,7 +7,7 @@ import fields as map_fields
 # Create your admin config here.
 
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ['subject', 'year', 'address', 'oloc', 'geolocation', 'distance', 'gaccuracy']
+    list_display = ['subject', 'year', 'address', 'oloc', 'geolocation', 'distance', 'gaccuracy', 'gtype']
     formfield_overrides = {
        map_fields.AddressField: {'widget': map_widgets.GoogleMapsAddressWidget},    
     }
@@ -22,7 +22,7 @@ class AddressAdmin(admin.ModelAdmin):
 admin.site.register(Address, AddressAdmin)
 
 class AddressInline(admin.TabularInline):
-    readonly_fields = ['address', 'geolocation', 'distance']
+    readonly_fields = ['address', 'geolocation', 'distance','pk']
     model = Address
     extra = 0
 class SubjectAdmin(admin.ModelAdmin):

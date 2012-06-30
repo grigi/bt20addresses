@@ -4,6 +4,7 @@ import fields as map_fields
 import re
 import math
 from pygeocoder import Geocoder, GeocoderError
+import socket
 
 # Create your models here.
 
@@ -71,6 +72,9 @@ class Address(models.Model):
     def wash(self):
         if self.address == '':
             self.address = None
+
+        if self.gtype == '':
+            self.gtype = None
         
         if str(self.number).lower().find('missing') != -1:
             self.number = None
@@ -145,7 +149,20 @@ class Address(models.Model):
                 pass
             
             try:
-                results = Geocoder.geocode(self.address)
+                try:
+                    results = Geocoder.geocode(self.address)
+                except socket.timeout:
+                    try:
+                        print "Try 1"
+                        results = Geocoder.geocode(self.address)
+                    except socket.timeout:
+                        try:
+                            print "Try 2"
+                            results = Geocoder.geocode(self.address)
+                        except socket.timeout:
+                            print "Try 3"
+                            results = Geocoder.geocode(self.address)
+                    
             except GeocoderError, s:
                 results = None
                 self.gtype=str(s)
@@ -161,7 +178,10 @@ class Address(models.Model):
                 self.gmetro = results[0].administrative_area_level_2
                 self.gprovince = results[0].administrative_area_level_1
                 self.gcountry = results[0].country
-                self.gpostcode = results[0].postal_code
+                try:
+                    self.gpostcode = int(results[0].postal_code)
+                except:
+                    pass
                 self.gtype = results[0].raw[0]['geometry']['location_type']
                 try:
                     bounds = results[0].raw[0]['geometry']['bounds']
@@ -173,7 +193,7 @@ class Address(models.Model):
             
     
     def __unicode__(self):
-        return '%s - %s' % (self.subject, self.year)
+        return '%d %s - %s' % (self.pk, self.subject, self.year)
         
     class Meta:
         unique_together = (("subject", "year"),)
